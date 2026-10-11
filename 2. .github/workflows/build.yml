@@ -1,0 +1,32 @@
+name: Compile Latest Patcher
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Fetch Latest Developer Source Code
+        uses: actions/checkout@v4
+        with:
+          repository: 'k1tbyte/Wand-Enhancer'
+          ref: 'master'
+
+      - name: Setup .NET Compiler Engine
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Add MSBuild to Path
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore Project Dependencies
+        run: msbuild Wand-Enhancer.sln /t:restore /p:Configuration=Release
+
+      - name: Compile Patcher Executable
+        run: msbuild Wand-Enhancer.sln /p:Configuration=Release /p:Platform="Any CPU"
+
+      - name: Package Finished Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wand-Enhancer-Compiled
+          path: WandEnhancer/bin/Release/net8.0-windows/
