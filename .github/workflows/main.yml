@@ -11,6 +11,23 @@ jobs:
           repository: 'k1tbyte/Wand-Enhancer'
           ref: 'master'
 
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm Package Manager
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Build Web Frontend Assets
+        run: |
+          cd web
+          pnpm install
+          pnpm build
+          cd ..
+
       - name: Setup .NET Compiler Engine
         uses: actions/setup-dotnet@v4
         with:
@@ -19,7 +36,7 @@ jobs:
       - name: Add MSBuild to Path
         uses: microsoft/setup-msbuild@v2
 
-      - name: Restore Project Dependencies
+      - name: Restore Legacy Dependencies
         run: msbuild Wand-Enhancer.sln /t:restore /p:Configuration=Release
 
       - name: Compile Patcher Executable
@@ -29,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Wand-Enhancer-Compiled
-          path: WandEnhancer/bin/Release/net8.0-windows/
+          path: src/bin/Release/
